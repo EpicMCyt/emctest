@@ -1,490 +1,428 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>EpicMC - Dein Minecraft Bedrock Server ohne Mods</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        /* Grundlegende Stile */
-        html {
-            font-family: 'Inter', sans-serif;
-            scroll-behavior: smooth;
-        }
-        
-        main {
-            position: relative;
-            perspective: 1200px; /* Perspektive für 3D-Effekt der Animation */
-            overflow: hidden;
-        }
-
-        /* Permanentes Custom Dark Theme */
-        body {
-            background-color: #262626; /* Dunkelgrauer Hintergrund */
-            color: #f9fafb; /* Heller Text */
-        }
-        .card { 
-            background-color: #1c1c1c; /* Angepasst an die Header-Farbe */
-            color: #f9fafb; 
-        }
-        .main-header { 
-            background-color: rgba(28, 28, 28, 0.8); /* Grauer Header mit Transparenz */
-        }
-
-        /* Apple Store-ähnliche Seiten-Übergangsanimation */
-        .page-content {
-            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0;
-            transform: scale(1.03); /* Startet leicht vergrößert */
-            display: none;
-            position: absolute;
-            width: 100%;
-            backface-visibility: hidden; /* Verhindert flackern bei 3D-Transformationen */
-        }
-        .page-content.active {
-            opacity: 1;
-            transform: scale(1); /* Endet bei normaler Größe */
-            display: block;
-            position: relative;
-        }
-        .page-content.exiting {
-            opacity: 0;
-            transform: scale(0.97); /* Verkleinert sich leicht beim Verlassen */
-            position: absolute;
-        }
-        
-        /* Galerie-Stile */
-        .gallery-container {
-            position: relative;
-        }
-        .gallery {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-        .gallery::-webkit-scrollbar {
-            display: none;
-        }
-        .gallery-item {
-            flex: 0 0 100%;
-            scroll-snap-align: center;
-        }
-        
+      /* Grundlegende Stile */
+      html {
+        font-family: "Inter", sans-serif;
+        scroll-behavior: smooth;
+      }
+      main {
+        position: relative;
+        perspective: 1200px; /* Perspektive für 3D-Effekt */
+        overflow: hidden;
+      }
+      body {
+        background-color: #262626; /* Dunkelgrau */
+        color: #f9fafb;
+      }
+      .card {
+        background-color: #1c1c1c;
+        color: #f9fafb;
+      }
+      .main-header {
+        background-color: rgba(28, 28, 28, 0.8);
+      }
+      /* Seitenübergang */
+      .page-content {
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        transform: scale(1.03);
+        display: none;
+        position: absolute;
+        width: 100%;
+        backface-visibility: hidden;
+      }
+      .page-content.active {
+        opacity: 1;
+        transform: scale(1);
+        display: block;
+        position: relative;
+      }
+      .page-content.exiting {
+        opacity: 0;
+        transform: scale(0.97);
+        position: absolute;
+      }
+      /* Galerie */
+      .gallery-container {
+        position: relative;
+      }
+      .gallery {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .gallery::-webkit-scrollbar {
+        display: none;
+      }
+      .gallery-item {
+        flex: 0 0 100%;
+        scroll-snap-align: center;
+      }
+      #admin-gallery .gallery-item {
+        flex-basis: 90%;
+        margin: 0 5%;
+      }
+      @media (min-width: 1024px) {
         #admin-gallery .gallery-item {
-            flex-basis: 90%;
-            margin: 0 5%;
+          flex-basis: 60%;
+          margin: 0 20%;
         }
-         @media (min-width: 1024px) {
-            #admin-gallery .gallery-item {
-                flex-basis: 60%;
-                margin: 0 20%;
-            }
-        }
-        
-        .gallery-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 10;
-            background-color: rgba(0, 0, 0, 0.3);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            font-size: 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .gallery-btn:hover {
-            background-color: rgba(0, 0, 0, 0.6);
-        }
+      }
+      .gallery-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .gallery-btn:hover {
+        background-color: rgba(0, 0, 0, 0.6);
+      }
+      .gallery-btn.prev {
+        left: 10px;
+      }
+      .gallery-btn.next {
+        right: 10px;
+      }
+      @media (min-width: 1024px) {
         .gallery-btn.prev {
-            left: 10px;
+          left: -30px;
         }
         .gallery-btn.next {
-            right: 10px;
+          right: -30px;
         }
-        @media (min-width: 1024px) {
-            .gallery-btn.prev {
-                left: -30px;
-            }
-            .gallery-btn.next {
-                right: -30px;
-            }
-        }
-
+      }
     </style>
 </head>
 <body class="antialiased">
+  <!-- Header / Navigation -->
+  <header
+    id="header"
+    class="main-header sticky top-0 z-50 backdrop-blur-lg border-b border-gray-700"
+  >
+    <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a
+          href="#"
+          class="flex items-center space-x-1 text-2xl font-black tracking-tighter"
+          onclick="showPage('home')"
+          > <span class="text-gray-100">Epic</span
+          ><span class="text-blue-500">MC</span></a
+        >
+        <div class="hidden md:flex items-center space-x-6">
+          <a
+            href="#"
+            class="nav-link text-gray-300 hover:text-blue-400 transition"
+            onclick="showPage('home')"
+            >Home</a
+          >
+          <a
+            href="#"
+            class="nav-link text-gray-300 hover:text-blue-400 transition"
+            onclick="showPage('minigames')"
+            >Minigames</a
+          >
+          <a
+            href="#"
+            class="nav-link text-gray-300 hover:text-blue-400 transition"
+            onclick="showPage('gallerie')"
+            >Gallerie</a
+          >
+          <a
+            href="#"
+            class="nav-link text-gray-300 hover:text-blue-400 transition"
+            onclick="showPage('news')"
+            >News</a
+          >
+          <a
+            href="#"
+            class="nav-link text-gray-300 hover:text-blue-400 transition"
+            onclick="showPage('geschichte')"
+            >Geschichte</a
+          >
+          <a
+            href="#"
+            class="nav-link text-gray-300 hover:text-blue-400 transition"
+            onclick="showPage('support')"
+            >Support</a
+          >
+        </div>
+        <div class="flex items-center">
+          <button
+            id="mobile-menu-button"
+            class="md:hidden p-2 rounded-full text-gray-300 hover:bg-gray-700 focus:outline-none ml-2"
+          >
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <!-- Mobile Menu -->
+    <div
+      id="mobile-menu"
+      class="hidden md:hidden px-4 pt-2 pb-4 space-y-2 border-t border-gray-700"
+    >
+      <a
+        href="#"
+        class="block nav-link text-gray-300 hover:text-blue-400"
+        onclick="showPage('home'); mobileMenu.classList.add('hidden');"
+        >Home</a
+      >
+      <a
+        href="#"
+        class="block nav-link text-gray-300 hover:text-blue-400"
+        onclick="showPage('minigames'); mobileMenu.classList.add('hidden');"
+        >Minigames</a
+      >
+      <a
+        href="#"
+        class="block nav-link text-gray-300 hover:text-blue-400"
+        onclick="showPage('gallerie'); mobileMenu.classList.add('hidden');"
+        >Gallerie</a
+      >
+      <a
+        href="#"
+        class="block nav-link text-gray-300 hover:text-blue-400"
+        onclick="showPage('news'); mobileMenu.classList.add('hidden');"
+        >News</a
+      >
+      <a
+        href="#"
+        class="block nav-link text-gray-300 hover:text-blue-400"
+        onclick="showPage('geschichte'); mobileMenu.classList.add('hidden');"
+        >Geschichte</a
+      >
+      <a
+        href="#"
+        class="block nav-link text-gray-300 hover:text-blue-400"
+        onclick="showPage('support'); mobileMenu.classList.add('hidden');"
+        >Support</a
+      >
+    </div>
+  </header>
 
-    <!-- Header / Navigation -->
-    <header id="header" class="main-header sticky top-0 z-50 backdrop-blur-lg border-b border-gray-700">
-        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <a href="#" class="flex items-center space-x-1 text-2xl font-black tracking-tighter" onclick="showPage('home')">
-                    <span class="text-gray-100">Epic</span><span class="text-blue-500">MC</span>
-                </a>
-                <div class="hidden md:flex items-center space-x-6">
-                    <a href="#" class="nav-link text-gray-300 hover:text-blue-400 transition" onclick="showPage('home')">Home</a>
-                    <a href="#" class="nav-link text-gray-300 hover:text-blue-400 transition" onclick="showPage('minigames')">Minigames</a>
-                    <a href="#" class="nav-link text-gray-300 hover:text-blue-400 transition" onclick="showPage('gallerie')">Gallerie</a>
-                    <a href="#" class="nav-link text-gray-300 hover:text-blue-400 transition" onclick="showPage('news')">News</a>
-                    <a href="#" class="nav-link text-gray-300 hover:text-blue-400 transition" onclick="showPage('geschichte')">Geschichte</a>
-                    <a href="#" class="nav-link text-gray-300 hover:text-blue-400 transition" onclick="showPage('support')">Support</a>
-                </div>
-                <div class="flex items-center">
-                    <button id="mobile-menu-button" class="md:hidden p-2 rounded-full text-gray-300 hover:bg-gray-700 focus:outline-none ml-2">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                </div>
+  <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Home Page -->
+    <div id="home" class="page-content">
+      <section class="text-center">
+        <h1
+          class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-4"
+        >
+          Willkommen auf <span class="text-gray-100">Epic</span
+          ><span class="text-blue-500">MC</span>
+        </h1>
+        <p
+          class="max-w-3xl mx-auto text-lg md:text-xl text-gray-300 mb-8"
+        >
+          Willkommen auf EpicMC – unserem einzigartigen Minecraft Bedrock
+          Server für kreative und actionreiche Minigames!
+          Ganz ohne Mods, nur mit Commands und viel Liebe zum Detail.
+        </p>
+        <div
+          class="inline-block card shadow-lg rounded-xl p-4 mb-10 border border-gray-700"
+        >
+          <p class="text-sm text-gray-400">Tritt uns bei!</p>
+          <div
+            class="flex items-center justify-center space-x-4 mt-2"
+          >
+            <div>
+              <p class="font-bold">IP:</p>
+              <p class="font-mono text-blue-400">epic-mc.pckt.me</p>
             </div>
-        </nav>
-         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-2 border-t border-gray-700">
-            <a href="#" class="block nav-link text-gray-300 hover:text-blue-400" onclick="showPage('home'); mobileMenu.classList.add('hidden');">Home</a>
-            <a href="#" class="block nav-link text-gray-300 hover:text-blue-400" onclick="showPage('minigames'); mobileMenu.classList.add('hidden');">Minigames</a>
-            <a href="#" class="block nav-link text-gray-300 hover:text-blue-400" onclick="showPage('gallerie'); mobileMenu.classList.add('hidden');">Gallerie</a>
-            <a href="#" class="block nav-link text-gray-300 hover:text-blue-400" onclick="showPage('news'); mobileMenu.classList.add('hidden');">News</a>
-            <a href="#" class="block nav-link text-gray-300 hover:text-blue-400" onclick="showPage('geschichte'); mobileMenu.classList.add('hidden');">Geschichte</a>
-            <a href="#" class="block nav-link text-gray-300 hover:text-blue-400" onclick="showPage('support'); mobileMenu.classList.add('hidden');">Support</a>
-        </div>
-    </header>
-
-    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-
-        <!-- Home Page -->
-        <div id="home" class="page-content">
-            <section class="text-center">
-                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-4">
-                    Willkommen auf <span class="text-gray-100">Epic</span><span class="text-blue-500">MC</span>
-                </h1>
-                <p class="max-w-3xl mx-auto text-lg md:text-xl text-gray-300 mb-8">
-                    Willkommen auf EpicMC – unserem einzigartigen Minecraft Bedrock Server für kreative und actionreiche Minigames!
-Ganz ohne Mods, nur mit Commands und viel Liebe zum Detail.
-                </p>
-                <div class="inline-block card shadow-lg rounded-xl p-4 mb-10 border border-gray-700">
-                    <p class="text-sm text-gray-400">Tritt uns bei!</p>
-                    <div class="flex items-center justify-center space-x-4 mt-2">
-                        <div>
-                            <p class="font-bold">IP:</p>
-                            <p class="font-mono text-blue-400">epic-mc.pckt.me</p>
-                        </div>
-                        <div class="border-l border-gray-600 h-10"></div>
-                        <div>
-                            <p class="font-bold">Port:</p>
-                            <p class="font-mono text-blue-400">19132</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-center space-x-6 mb-16">
-                    <a href="https://www.youtube.com/@EpicmcYT" target="_blank" class="text-gray-400 hover:text-red-500 transition text-2xl"><i class="fab fa-youtube"></i></a>
-                    <a href="https://www.instagram.com/epicmc_insta" target="_blank" class="text-gray-400 hover:text-pink-400 transition text-2xl"><i class="fab fa-instagram"></i></a>
-                    <a href="https://tiktok.com/@epicmcserver" target="_blank" class="text-gray-400 hover:text-white transition text-2xl"><i class="fab fa-tiktok"></i></a>
-                </div>
-
-                <h2 class="text-3xl font-bold mb-8">Unser Team</h2>
-                <div class="gallery-container">
-                    <div id="admin-gallery" class="gallery pb-4">
-                        <!-- Admin-Karten werden hier von JS eingefügt -->
-                    </div>
-                    <button id="admin-prev" class="gallery-btn prev"><i class="fas fa-chevron-left"></i></button>
-                    <button id="admin-next" class="gallery-btn next"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </section>
+            <div class="border-l border-gray-600 h-10"></div>
+            <div>
+              <p class="font-bold">Port:</p>
+              <p class="font-mono text-blue-400">19132</p>
+            </div>
+          </div>
         </div>
 
-        <!-- Minigames Page -->
-        <div id="minigames" class="page-content">
-             <section>
-                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter mb-10 text-center">Unsere Minigames</h1>
-                
-                <h2 class="text-2xl font-bold mb-4 text-green-500">Spielbar</h2>
-                <div class="gallery-container mb-12">
-                    <div id="minigame-gallery-finished" class="gallery pb-4">
-                        <!-- Fertige Minigames werden hier von JS eingefügt -->
-                    </div>
-                    <button id="finished-prev" class="gallery-btn prev"><i class="fas fa-chevron-left"></i></button>
-                    <button id="finished-next" class="gallery-btn next"><i class="fas fa-chevron-right"></i></button>
-                </div>
-
-                <h2 class="text-2xl font-bold mb-4 text-red-500">In Entwicklung</h2>
-                <div class="gallery-container">
-                    <div id="minigame-gallery-wip" class="gallery pb-4">
-                         <!-- Unfertige Minigames werden hier von JS eingefügt -->
-                    </div>
-                    <button id="wip-prev" class="gallery-btn prev"><i class="fas fa-chevron-left"></i></button>
-                    <button id="wip-next" class="gallery-btn next"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </section>
+        <div
+          class="flex justify-center space-x-6 mb-16"
+        >
+          <a
+            href="https://www.youtube.com/@EpicmcYT"
+            target="_blank"
+            class="text-gray-400 hover:text-red-500 transition text-2xl"
+            ><i class="fab fa-youtube"></i
+          ></a>
+          <a
+            href="https://www.instagram.com/epicmc_insta"
+            target="_blank"
+            class="text-gray-400 hover:text-pink-400 transition text-2xl"
+            ><i class="fab fa-instagram"></i
+          ></a>
+          <a
+            href="https://tiktok.com/@epicmcserver"
+            target="_blank"
+            class="text-gray-400 hover:text-white transition text-2xl"
+            ><i class="fab fa-tiktok"></i
+          ></a>
         </div>
 
-      <!-- Gallerie Page -->
-<div id="gallerie" class="page-content">
-    <section class="max-w-5xl mx-auto">
-        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter mb-10 text-center">Gallerie</h1>
+        <h2 class="text-3xl font-bold mb-8">Unser Team</h2>
+        <div class="gallery-container">
+          <div id="admin-gallery" class="gallery pb-4">
+            <!-- Admin-Karten von JS -->
+          </div>
+          <button id="admin-prev" class="gallery-btn prev">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button id="admin-next" class="gallery-btn next">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Minigames Page -->
+    <div id="minigames" class="page-content">
+      <section>
+        <h1
+          class="text-4xl md:text-5xl font-extrabold tracking-tighter mb-10 text-center"
+        >
+          Unsere Minigames
+        </h1>
+
+        <h2 class="text-2xl font-bold mb-4 text-green-500">Spielbar</h2>
+        <div class="gallery-container mb-12">
+          <div id="minigame-gallery-finished" class="gallery pb-4">
+            <!-- Fertige Minigames von JS -->
+          </div>
+          <button id="finished-prev" class="gallery-btn prev">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button id="finished-next" class="gallery-btn next">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <h2 class="text-2xl font-bold mb-4 text-red-500">In Entwicklung</h2>
+        <div class="gallery-container">
+          <div id="minigame-gallery-wip" class="gallery pb-4">
+            <!-- WIP Minigames von JS -->
+          </div>
+          <button id="wip-prev" class="gallery-btn prev">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button id="wip-next" class="gallery-btn next">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Gallerie Page -->
+    <div id="gallerie" class="page-content">
+      <section class="max-w-5xl mx-auto">
+        <h1
+          class="text-4xl md:text-5xl font-extrabold tracking-tighter mb-10 text-center"
+        >
+          Gallerie
+        </h1>
 
         <!-- Abschnitt 1 -->
         <div class="mb-16">
-            <h2 class="text-3xl font-bold mb-2">Die Stadt</h2>
-            <p class="text-gray-400 mb-6">Ein Überblick über unsere riesige Minecraft-Stadt und ihre Highlights.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <img src="bild1.jpg" alt="Die Stadt Bild 1" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-                <img src="bild2.jpg" alt="Die Stadt Bild 2" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-                <img src="bild3.jpg" alt="Die Stadt Bild 3" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-                <img src="bild4.jpg" alt="Die Stadt Bild 4" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-            </div>
+          <h2 class="text-3xl font-bold mb-2">Die Stadt</h2>
+          <p class="text-gray-400 mb-6">
+            Ein Überblick über unsere riesige Minecraft-Stadt und ihre
+            Highlights.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <img
+              src="bild1.jpg"
+              alt="Die Stadt Bild 1"
+              class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64"
+            />
+            <img
+              src="bild2.jpg"
+              alt="Die Stadt Bild 2"
+              class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64"
+            />
+            <img
+              src="bild3.jpg"
+              alt="Die Stadt Bild 3"
+              class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64"
+            />
+            <img
+              src="bild4.jpg"
+              alt="Die Stadt Bild 4"
+              class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64"
+            />
+          </div>
         </div>
 
         <!-- Abschnitt 2 -->
         <div class="mb-16">
-            <h2 class="text-3xl font-bold mb-2">Die Lobby</h2>
-            <p class="text-gray-400 mb-6">Hier siehst du unsere zentrale Lobby mit allen Portalen und Infos.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <img src="lobby1.jpg" alt="Lobby Bild 1" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-                <img src="lobby2.jpg" alt="Lobby Bild 2" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-                <img src="lobby3.jpg" alt="Lobby Bild 3" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-                <img src="lobby4.jpg" alt="Lobby Bild 4" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-            </div>
+          <h2 class="text-3xl font-bold mb-2">Die Lobby</h2>
+          <p class="text-gray-400 mb-6">
+            Hier siehst du unsere zentrale Lobby mit allen Portalen und Infos.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <img
+              src="lobby1.jpg"
+              alt="Lobby Bild 1"
+              class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64"
+            />
+            <img
+              src="lobby2.jpg"
+              alt="Lobby Bild 2"
+              class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64"
+            />
+            <img
+              src="lobby3.jpg"
+              alt="Lobby Bild 3"
+              class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64"
+            />
+            <img
+              src="lobby4.jpg"
+              alt="Lobby Bild 4"
+              class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64"
+            />
+          </div>
         </div>
 
         <!-- Abschnitt 3 -->
         <div class="mb-16">
-            <h2 class="text-3xl font-bold mb-2">Minispiele</h2>
-            <p class="text-gray-400 mb-6">Ein Blick auf einige unserer beliebtesten Minigames.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <img src="game1.jpg" alt="Minigame Bild 1" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-                <img src="game2.jpg" alt="Minigame Bild 2" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-                <img src="game3.jpg" alt="Minigame Bild 3" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-                <img src="game4.jpg" alt="Minigame Bild 4" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-            </div>
-        </div>
-
-        <!-- Abschnitt 4 -->
-        <div class="mb-16">
-            <h2 class="text-3xl font-bold mb-2">Events</h2>
-            <p class="text-gray-400 mb-6">Screenshots von vergangenen Events und besonderen Momenten.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <img src="event1.jpg" alt="Event Bild 1" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-                <img src="event2.jpg" alt="Event Bild 2" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-                <img src="event3.jpg" alt="Event Bild 3" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-                <img src="event4.jpg" alt="Event Bild 4" class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64">
-            </div>
-        </div>
-     </section>
- </div>
-
-        <!-- News Page -->
-        <div id="news" class="page-content">
-            <section class="max-w-4xl mx-auto">
-                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter mb-10 text-center">News & Updates</h1>
-                <div class="space-y-8">
-                    <article class="card p-6 rounded-lg shadow-md border border-gray-700">
-                        <h2 class="text-2xl font-bold mb-2 text-blue-500">EpicMC hat Geburtstag!</h2>
-                        <p class="text-sm text-gray-400 mb-4">20. Juni 2025</p>
-                        <p class="text-gray-300">
-                            EpicMC wird am 1.August 2 Jahre alt! Es wird nicht nur events und EpicCoin aktionen geben, sondern auch eine spannende neue story! Also, Tritt uns bei! :)
-                        </p>
-                    </article>
-                    <article class="card p-6 rounded-lg shadow-md border border-gray-700">
-                        <h2 class="text-2xl font-bold mb-2 text-blue-500">Geburtstags Verlegung</h2>
-                        <p class="text-sm text-gray-400 mb-4">05. april 2025</p>
-                        <p class="text-gray-300">
-                             Lucajm1307 hat denGeburtstag von EpicMC auf den 1. August gelegt. Der alte (18. Juni) lag außerhalb der Sommerferien. Jetzt kann die Community in der Ferienzeit gemeinsam feiern – mit mehr Events, Aktionen und Zeit für Spaß!
-                        </p>
-                    <article class="card p-6 rounded-lg shadow-md border border-gray-700">
-                        <h2 class="text-2xl font-bold mb-2 text-blue-500">Wichtig!</h2>
-                        <p class="text-sm text-gray-400 mb-4">06.>Juli 2025</p>
-                        <p class="text-gray-300">
-                             Pockethost hat unsere Server leider noch nicht auf die aktuelle Minecraft-Version 1.21.92 geupdatet (Release vor ca. 2 Wochen). Dadurch kann es zu Verzögerungen bei den Vorbereitungen für den EpicMC Geburtstag kommen. Wir halten euch auf dem Laufenden!
-                        </p>
-                    </article>
-                </div>
-            </section>
-        </div>
-
-        <!-- Geschichte Page -->
-        <div id="geschichte" class="page-content">
-            <section class="max-w-4xl mx-auto">
-                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter mb-10 text-center">Unsere Geschichte</h1>
-                <div class="card p-8 rounded-lg shadow-md border border-gray-700 space-y-6 text-lg text-gray-300">
-                    <p>
-                        Alles begann im Jahr 2022 auf der Welt „Server 1.0“, erschaffen von Isefi112. Damals noch auf der Nintendo Switch, entstand eine kleine, aber lebendige Minecraft-Welt mit einer kleinen Stadt, einer simplen Lobby, ersten Minispielen, einem eigenen Währungssystem  und sogar einer Premium-Lobby mit Disco und Kino. 
-
-
-Nach einigen anderen servern wie BedrockMC (Februar 2023) und CloudMC (Februar bis Juni 2023) nahm das Projekt langsam Form an. Während dieser Zeit wurden unzählige Ideen ausprobiert – manche funktionierten, andere wurden verworfen. Doch aus jedem Server entstand etwas Neues, etwas Besseres. 
-
-
-Am 18. Juni 2023 wurde schließlich der Server gestartet, der heute als Herzstück von allem gilt: EpicMC. Anfangs noch unter dem Namen „Epigmc“, wurde er am 4. Juli 2023 offiziell in „EpicMC“ umbenannt. Seitdem wächst und entwickelt sich der Server stetig weiter – mit Minigames, einer eigenen Stadt, einer durchdachten Story, einem Geldsystem und vielen Geheimnissen, die es zu entdecken gibt.
- 
-
-Auch der Server MC Rig, gestartet von Isefi kurz vor EpicMC, trug zur Geschichte bei. Dort entstand die Idee eine Bohrinsel als lobby zu bauen und eine Küstenstadt, die über einen imaginären Tunnel mit der Stadt auf EpicMC verbunden war – ein kleines Detail, das bis heute auf dem Server zu finden ist. 
-                </div>
-            </section>
-        </div>
-
-        <!-- Support Page -->
-        <div id="support" class="page-content">
-            <section class="text-center">
-                <i class="fab fa-discord text-8xl text-indigo-500 mb-6"></i>
-                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4">Brauchst du Hilfe?</h1>
-                <p class="max-w-2xl mx-auto text-lg md:text-xl text-gray-300 mb-8">
-                    Tritt unserem Discord Server bei, um Support zu erhalten, Mitspieler zu finden oder einfach nur mit der Community zu chatten.
-                </p>
-                <a href="#" class="inline-block bg-indigo-500 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg hover:bg-indigo-600 transform hover:-translate-y-1 transition-all duration-300">
-                    <i class="fab fa-discord mr-2"></i> Discord beitreten
-                </a>
-            </section>
-        </div>
-
-    </main>
-
-    <footer class="text-center py-8 border-t border-gray-700 mt-16">
-        <p class="text-gray-400">&copy; 2025 EpicMC. Alle Rechte vorbehalten.</p>
-    </footer>
-
-    <script>
-        // --- MOBILE MENU ---
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-        
-        // --- PAGE NAVIGATION WITH ANIMATION ---
-        let isTransitioning = false;
-        function showPage(pageId) {
-            if (isTransitioning) return;
-            const nextPage = document.getElementById(pageId);
-            const currentPage = document.querySelector('.page-content.active');
-            if (currentPage === nextPage) return;
-            
-            isTransitioning = true;
-
-            if (currentPage) {
-                currentPage.classList.add('exiting');
-                currentPage.addEventListener('transitionend', () => {
-                    currentPage.classList.remove('active', 'exiting');
-                }, { once: true });
-            }
-            
-            setTimeout(() => {
-                nextPage.classList.add('active');
-                window.scrollTo(0, 0);
-                isTransitioning = false;
-            }, 50); // Kleiner Timeout, damit die Animation sauber startet
-        }
-        
-        // --- INITIAL PAGE LOAD ---
-        document.getElementById('home').classList.add('active');
-        
-        // --- DATA ---
-        // ===================================================================
-        // HIER DEINE ADMIN-BILDER EINTRAGEN
-        // Füge eine URL zu deinem Bild hinzu. 
-        // Wenn du `img: null` lässt, wird der Minecraft-Skin verwendet.
-        // ===================================================================
-        const admins = [
-            { name: 'lucajm1307', role: 'Owner & Entwickler', img: null },
-            { name: 'Isefi112', role: 'Mitgründer & 1. Admin', img: null },
-            { name: 'K77Justino', role: '2. Admin & Builder', img: null },
-            { name: 'VtxNova', role: '3. Admin & Builder', img: null },
-            { name: 'maximusmuellus', role: '4. Admin & Builder', img: null },
-            { name: 'Fitzmauki', role: '5. Admin & Builder', img: null },
-            { name: 'TwoJaguar', role: '6. Admin & Builder', img: null }
-        ];
-        
-        const finishedMinigames = [
-            { name: 'Dropper', img: 'drop.jpg' },
-            { name: 'Jump and Run', img: 'jump and run.jpg' },
-            { name: 'TNT Run', img: 'tntlauf.jpg' }
-        ];
-
-        const wipMinigames = [
-            { name: 'Mob Arena', img: 'pvp monsterhöle.jpg' },
-            { name: 'Blockparty', img: 'DEIN_BLOCKPARTY_BILD.jpg' },
-            { name: 'Hunger Games', img: 'DEIN_HUNGERGAMES_BILD.jpg' }
-        ];
-
-        // --- DYNAMIC CONTENT GENERATION ---
-        function createAdminCard(admin) {
-            // Entscheidet, ob das eigene Bild oder der Minecraft-Skin geladen wird.
-            const imageUrl = admin.img ? admin.img : `https://mc-heads.net/avatar/${admin.name}/100`;
-            const fallbackImage = `https://mc-heads.net/avatar/MHF_Steve/100`; // Steve als finaler Fallback
-
-            return `
-                <div class="gallery-item">
-                    <div class="card shadow-lg rounded-xl p-6 text-center border border-gray-700 mx-2">
-                        <img src="${imageUrl}" 
-                             alt="Avatar von ${admin.name}" 
-                             class="w-24 h-24 rounded-full mx-auto mb-4 shadow-md bg-gray-600 object-cover"
-                             onerror="this.onerror=null; this.src='${fallbackImage}';">
-                        <h3 class="text-2xl font-bold">${admin.name}</h3>
-                        <p class="text-blue-400 text-lg">${admin.role}</p>
-                    </div>
-                </div>`;
-        }
-
-        function createMinigameCard(game) {
-             return `
-                <div class="gallery-item">
-                    <div class="relative h-64 rounded-xl overflow-hidden shadow-lg border border-gray-700 mx-2">
-                        <img src="${game.img}" class="absolute inset-0 w-full h-full object-cover" alt="Bild von ${game.name}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1f2937/FFFFFF?text=Bild+fehlt';">
-                        <div class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-                            <h3 class="text-white text-3xl font-black tracking-tighter">${game.name}</h3>
-                        </div>
-                    </div>
-                </div>`;
-        }
-
-        document.getElementById('admin-gallery').innerHTML = admins.map(createAdminCard).join('');
-        document.getElementById('minigame-gallery-finished').innerHTML = finishedMinigames.map(createMinigameCard).join('');
-        document.getElementById('minigame-gallery-wip').innerHTML = wipMinigames.map(createMinigameCard).join('');
-
-        // --- MANUAL GALLERY CONTROLS ---
-        function setupGallery(galleryId, prevBtnId, nextBtnId) {
-            const gallery = document.getElementById(galleryId);
-            const prevBtn = document.getElementById(prevBtnId);
-            const nextBtn = document.getElementById(nextBtnId);
-
-            if (!gallery || !prevBtn || !nextBtn) return;
-
-            const scrollAmount = () => gallery.clientWidth;
-
-            nextBtn.addEventListener('click', () => {
-                const amount = scrollAmount();
-                if (gallery.scrollLeft + amount >= gallery.scrollWidth - 1) { // -1 for precision
-                    gallery.scrollTo({ left: 0, behavior: 'smooth' });
-                } else {
-                    gallery.scrollBy({ left: amount, behavior: 'smooth' });
-                }
-            });
-
-            prevBtn.addEventListener('click', () => {
-                const amount = scrollAmount();
-                if (gallery.scrollLeft < amount) {
-                    gallery.scrollTo({ left: gallery.scrollWidth, behavior: 'smooth' });
-                } else {
-                    gallery.scrollBy({ left: -amount, behavior: 'smooth' });
-                }
-            });
-        }
-        
-        setupGallery('admin-gallery', 'admin-prev', 'admin-next');
-        setupGallery('minigame-gallery-finished', 'finished-prev', 'finished-next');
-        setupGallery('minigame-gallery-wip', 'wip-prev', 'wip-next');
-
-    </script>
-</body>
-</html>
+          <h2 class="text-3xl font-bold mb-2">Minispiele</h2>
+          <p class="text-gray-400 mb-6">
+            Ein Blick auf einige unserer beliebtesten Minigames.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <img
+              src="game1.jpg"
+              alt="Minigame Bild 1"
+              class="rounded-lg shadow-lg border border-gray-700 object-cover w-full h-64"
+            />
+           
